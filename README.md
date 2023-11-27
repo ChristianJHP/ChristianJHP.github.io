@@ -1,10 +1,1 @@
-Coming Soon
-===========
-Coming Soon is a simplistic, animated and responsive "coming soon" page.
-
-- HTML and CSS
-- Multi-Browser Support (Up to Date Major Browsers)
-- Responsive Design
-
-[Demo](http://yc.github.io/coming-soon/)
-<img src="index.svg" width="10" height="10" />
+I was working on dynamic changes and I broke my website. I'll fix things after finals lol
