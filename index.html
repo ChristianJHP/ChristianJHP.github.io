@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>:)</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        body {
+            font-family: 'Press Start 2P', cursive;
+            background-color: #2e2e2e;
+            color: white;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .container {
+            position: relative;
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+        #note {
+            width: 70%;
+            height: 300px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #333;
+            color: white;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+            position: relative;
+            z-index: 1;
+            transition: background-color 0.3s;
+            font-family: 'Press Start 2P', cursive;
+        }
+        #note:focus {
+            background-color: #444;
+        }
+        .button {
+            display: inline-block;
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 16px;
+            margin-top: 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            font-family: 'Press Start 2P', cursive;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        .template-selector {
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+        }
+        .template-button {
+            background-color: #555;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            margin: 0 5px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            font-family: 'Press Start 2P', cursive;
+        }
+        .template-button:hover {
+            background-color: #666;
+        }
+        .link-gif {
+            width: 150px;
+            height: auto;
+            position: absolute;
+            left: 20px;
+            bottom: 20px;
+            z-index: 2;
+            transition: opacity 0.3s;
+        }
+        .running-gif {
+            width: 150px;
+            height: auto;
+            position: absolute;
+            right: 20px;
+            bottom: 20px;
+            z-index: 2;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .running-gif.active {
+            opacity: 1;
+        }
+        #datetime {
+            font-size: 12px;
+            margin-bottom: 20px;
+            font-weight: 500;
+	    text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div id="datetime"></div>
+    <div class="container">
+        <div class="template-selector">
+            <button class="template-button" onclick="loadTemplate('lecture')">Lecture Notes</button>
+            <button class="template-button" onclick="loadTemplate('todo')">To-Do List</button>
+            <button class="template-button" onclick="loadTemplate('quote')">Code</button>
+        </div>
+        <textarea id="note" placeholder="Get cookin right here..." oninput="startAnimation()"></textarea>
+        <button class="button" onclick="downloadNote()">Download Note</button>
+        <img id="link-gif" class="link-gif" src="link-walk.gif" alt="Link Walking">
+        <img id="running-gif" class="running-gif" src="link-run.gif" alt="Link Running">
+    </div>
+
+    <script>
+        var noteTextarea = document.getElementById('note');
+        var linkGif = document.getElementById('link-gif');
+        varrunningGif = document.getElementById('running-gif');
+        var datetimeDisplay = document.getElementById('datetime');
+
+        function loadTemplate(templateType) {
+            let templateContent = '';
+
+            switch (templateType) {
+                case 'lecture':
+                    templateContent = 'Lecture Notes\n\nCourse: \nDate: \n\nTopics Covered:\n- \n- \n- \n\nKey Points:\n- \n- \n- \n\nQuestions:\n- \n- \n- ';
+                    break;
+                case 'todo':
+                    templateContent = 'To-Do List\n\n1. \n2. \n3. \n\nPriority Tasks:\n1. \n2. \n3. ';
+                    break;
+                case 'quote':
+                    templateContent = '"Code goes here..."';
+                    break;
+                default:
+                    templateContent = '';
+            }
+
+            noteTextarea.value = templateContent;
+        }
+
+        function startAnimation() {
+            var noteContent = noteTextarea.value.trim();
+
+            if (noteContent.length > 0) {
+                linkGif.style.opacity = '0';
+                runningGif.classList.add('active');
+            } else {
+                linkGif.style.opacity = '1';
+                runningGif.classList.remove('active');
+            }
+        }
+
+        function downloadNote() {
+            var noteContent = noteTextarea.value;
+            var blob = new Blob([noteContent], { type: 'text/plain' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+           a.href = url;
+            a.download = 'note.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function updateDatetime() {
+            var now = new Date();
+            var hours = now.getHours().toString().padStart(2, '0');
+            var minutes = now.getMinutes().toString().padStart(2, '0');
+            var seconds = now.getSeconds().toString().padStart(2, '0');
+            var year = now.getFullYear();
+            var month = (now.getMonth() + 1).toString().padStart(2, '0');
+            var day = now.getDate().toString().padStart(2, '0');
+            datetimeDisplay.innerHTML = `${hours}:${minutes}:${seconds} ${year}/${month}/${day} `;
+        }
+	setInterval(updateDatetime, 1000);
+        updateDatetime();
+
+    </script>
+</body>
+</html>
+ 
