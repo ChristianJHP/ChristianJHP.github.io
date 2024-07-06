@@ -36,6 +36,10 @@
             display: block;
             position: relative; /* Ensure relative positioning for z-index */
             z-index: 1; /* Ensure textarea is in front */
+            transition: background-color 0.3s;
+        }
+        #note:focus {
+            background-color: #444; /* Darker background when focused */
         }
         .watermark {
             position: relative;
@@ -52,6 +56,20 @@
             left: 20px; /* Adjust horizontal position */
             bottom: 20px; /* Adjust vertical position */
             z-index: 2; /* Ensure GIF is in front of textarea */
+            transition: opacity 0.3s;
+        }
+        .running-gif {
+            width: 150px; /* Adjust width as needed */
+            height: auto;
+            position: absolute; /* Absolute positioning relative to .container */
+            right: 20px; /* Adjust horizontal position */
+            bottom: 20px; /* Adjust vertical position */
+            z-index: 2; /* Ensure GIF is in front of textarea */
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .running-gif.active {
+            opacity: 1;
         }
         .button {
             display: inline-block;
@@ -71,34 +89,113 @@
         .button:hover {
             background-color: #45a049; /* Darker green */
         }
+        .stats {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #888;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .stats.active {
+            opacity: 1;
+        }
+        .progress-container {
+            width: 70%;
+            margin: 20px auto;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .progress-container.active {
+            opacity: 1;
+        }
+        .progress-bar {
+            height: 10px;
+            background-color: #ddd;
+            position: relative;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            width: 0;
+            background-color: #4CAF50; /* Green */
+            transition: width 0.3s ease-in-out;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <!-- Link walking GIF -->
         <img id="link-gif" class="link-gif" src="link-walk.gif" alt="Link Walking">
+        <!-- Link running GIF (initially hidden) -->
+        <img id="running-gif" class="running-gif" src="link-run.gif" alt="Link Running">
         <!-- Textarea for note-taking -->
-        <textarea id="note" placeholder="Get cookin right here..." oninput="startAnimation()"></textarea>
-        <!-- Watermark -->
-        
+        <textarea id="note" placeholder="Get cookin right here..." oninput="startAnimation(); updateStats(); updateProgressBar();"></textarea>
+        <!-- Progress tracking statistics -->
+        <div class="stats" id="stats">Word Count: 0 | Character Count: 0</div>
+        <!-- Progress bar container -->
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-bar-fill" id="progressBarFill"></div>
+            </div>
+        </div>
         <!-- Modern download button -->
         <button class="button" onclick="saveToFile()">Download Note</button>
     </div>
 
     <script>
         var linkGif = document.getElementById('link-gif');
+        var runningGif = document.getElementById('running-gif');
         var noteTextarea = document.getElementById('note');
+        var statsDiv = document.getElementById('stats');
+        var progressBarFill = document.getElementById('progressBarFill');
+        var statsContainer = document.querySelector('.stats');
+        var progressContainer = document.querySelector('.progress-container');
 
         function startAnimation() {
             var noteContent = noteTextarea.value.trim();
 
             if (noteContent.length > 0) {
-                // Hide Link walking GIF if text is typed
-                linkGif.style.visibility = 'hidden';
+                // Hide Link walking GIF and show running GIF if text is typed
+                linkGif.style.opacity = '0';
+                runningGif.classList.add('active');
+                statsContainer.classList.add('active');
+                progressContainer.classList.add('active');
             } else {
-                // Show Link walking GIF if no text is typed
-                linkGif.style.visibility = 'visible';
+                // Show Link walking GIF and hide running GIF if no text is typed
+                linkGif.style.opacity = '1';
+                runningGif.classList.remove('active');
+                statsContainer.classList.remove('active');
+                progressContainer.classList.remove('active');
             }
+        }
+
+        function updateStats() {
+            var noteContent = noteTextarea.value;
+            var wordCount = countWords(noteContent);
+            var characterCount = noteContent.length;
+
+            // Update statistics display
+            statsDiv.innerHTML = `Word Count: ${wordCount} | Character Count: ${characterCount}`;
+        }
+
+        function countWords(text) {
+            // Split the text by whitespace characters
+            var words = text.trim().split(/\s+/);
+            // Filter out empty strings (in case of multiple spaces)
+            words = words.filter(function(word) {
+                return word.length > 0;
+            });
+            return words.length;
+        }
+
+        function updateProgressBar() {
+            var noteContent = noteTextarea.value;
+            var maxLength = 500; // Adjust maximum length as needed
+            var currentLength = noteContent.length;
+            var progress = (currentLength / maxLength) * 100;
+
+            // Update progress bar width
+            progressBarFill.style.width = progress + '%';
         }
 
         function saveToFile() {
@@ -116,4 +213,3 @@
     </script>
 </body>
 </html>
-
