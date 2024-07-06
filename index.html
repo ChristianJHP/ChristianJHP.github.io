@@ -3,108 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bouncing Ball Game</title>
+    <title>Write down your thoughts</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
     <style>
         body {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column; /* Center content vertically */
-            height: 100vh;
+            font-family: Arial, sans-serif;
+            background-color: #2e2e2e;
+            color: white;
             margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
-        div {
-            margin-bottom: 20px; /* Add margin below the text */
-        }
-        #game-container {
+        .container {
             position: relative;
-            width: 400px;
-            height: 400px;
-            overflow: hidden;
-            border: 2px solid #333; /* Add border styling */
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
         }
-        #ball {
+        #note {
+            width: 70%; /* Adjust width as needed */
+            height: 300px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #333;
+            color: white;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+            position: relative; /* Ensure relative positioning for z-index */
+            z-index: 1; /* Ensure textarea is in front */
+        }
+        .watermark {
             position: absolute;
-            width: 40px;
-            height: 40px;
-            background-color: #3498db;
-            border-radius: 50%;
+            bottom: 10px; /* Adjust vertical position */
+            right: 10px; /* Adjust horizontal position */
+            color: rgba(255, 255, 255, 0.2); /* Faint white color */
+            font-size: 12px;
+        }
+        .link-gif {
+            width: 150px; /* Adjust width as needed */
+            height: auto;
+            position: absolute; /* Absolute positioning relative to .container */
+            left: 20px; /* Adjust horizontal position */
+            bottom: 20px; /* Adjust vertical position */
+            z-index: 2; /* Ensure GIF is in front of textarea */
+        }
+        .button {
+            display: inline-block;
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-top: 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #45a049; /* Darker green */
         }
     </style>
-    
-    
 </head>
 <body>
-    <div>
-        <h2>look at this ball you idiot. It changes colors.</h2>
+    <div class="container">
+        <!-- Link walking GIF -->
+        <img id="link-gif" class="link-gif" src="link-walk.gif" alt="Link Walking">
+        <!-- Textarea for note-taking -->
+        <textarea id="note" placeholder="Write your ideas here..." oninput="startAnimation()"></textarea>
+        <!-- Watermark -->
+        <div class="watermark">Made by Christian Park</div>
+        <!-- Modern download button -->
+        <button class="button" onclick="saveToFile()">Download Note</button>
     </div>
 
-    <div id="game-container">
-        <div id="ball"></div>
-    </div>
+    <script>
+        var linkGif = document.getElementById('link-gif');
+        var noteTextarea = document.getElementById('note');
 
-    <!-- ... (HTML code remains unchanged) -->
+        function startAnimation() {
+            var noteContent = noteTextarea.value.trim();
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const gameContainer = document.getElementById('game-container');
-        const ball = document.getElementById('ball');
-
-        let ballX = 200; // Initial X position
-        let ballY = 200; // Initial Y position
-        let ballSpeedX = 5; // Initial X speed
-        let ballSpeedY = 3; // Initial Y speed
-
-        function getRandomColor() {
-            const letters = '0123456789ABCDEF';
-            let color = '#';
-            for (let i = 0; i < 6; i++) {
-                color += letters[Math.floor(Math.random() * 16)];
-            }
-            return color;
-        }
-
-        function updateBallPosition() {
-            ballX += ballSpeedX;
-            ballY += ballSpeedY;
-
-            // Bounce off the walls
-            if (ballX < 0 || ballX + ball.offsetWidth > gameContainer.offsetWidth) {
-                ballSpeedX = -ballSpeedX;
-            }
-            if (ballY < 0 || ballY + ball.offsetHeight > gameContainer.offsetHeight) {
-                ballSpeedY = -ballSpeedY;
-            }
-
-            // Update ball position and color
-            ball.style.left = ballX + 'px';
-            ball.style.top = ballY + 'px';
-
-            // Change ball color every 500 milliseconds
-            if (Date.now() % 1000 < 16) {
-                ball.style.backgroundColor = getRandomColor();
+            if (noteContent.length > 0) {
+                // Hide Link walking GIF if text is typed
+                linkGif.style.visibility = 'hidden';
+            } else {
+                // Show Link walking GIF if no text is typed
+                linkGif.style.visibility = 'visible';
             }
         }
 
-        function handleMouseClick(event) {
-            // Move the ball to the clicked position
-            ballX = event.clientX - gameContainer.offsetLeft - ball.offsetWidth / 2;
-            ballY = event.clientY - gameContainer.offsetTop - ball.offsetHeight / 2;
+        function saveToFile() {
+            var noteContent = noteTextarea.value;
+            var blob = new Blob([noteContent], { type: 'text/plain' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'note.txt'; // Set desired file name here
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         }
-
-        // Set up event listeners
-        gameContainer.addEventListener('click', handleMouseClick);
-
-        // Game loop
-        function gameLoop() {
-            updateBallPosition();
-            requestAnimationFrame(gameLoop);
-        }
-
-        // Start the game loop
-        gameLoop();
-    });
-</script>
-
+    </script>
 </body>
 </html>
+
