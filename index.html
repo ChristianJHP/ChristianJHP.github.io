@@ -38,11 +38,12 @@
             z-index: 1; /* Ensure textarea is in front */
         }
         .watermark {
-            position: absolute;
+            position: relative;
             bottom: 10px; /* Adjust vertical position */
             right: 10px; /* Adjust horizontal position */
+            text-align: center;
             color: rgba(255, 255, 255, 0.2); /* Faint white color */
-            font-size: 12px;
+            font-size: 5px;
         }
         .link-gif {
             width: 150px; /* Adjust width as needed */
@@ -77,11 +78,10 @@
         <!-- Link walking GIF -->
         <img id="link-gif" class="link-gif" src="link-walk.gif" alt="Link Walking">
         <!-- Textarea for note-taking -->
+        <div class="watermark">-christian park</div>
         <textarea id="note" placeholder="Get cookin right here..." oninput="startAnimation()"></textarea>
         <!-- Watermark -->
-        <div class="watermark">
-            \n\n
-            Made by Christian Park</div>
+        
         <!-- Modern download button -->
         <button class="button" onclick="saveToFile()">Download Note</button>
     </div>
